@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sala 204 — Aula em Andamento (Câmera Isométrica)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="iso-canvas"></canvas>
+
+    <!-- Painel de Matéria em Andamento -->
+    <aside class="lesson-panel" aria-label="Controle da Aula">
+      <div class="lesson-header">
+        <span class="lesson-title">Prof. Motta • Sala 204</span>
+        <span class="lesson-badge" id="cam-dir-label">NORTE</span>
+      </div>
+      <div class="subject-tabs">
+        <button class="sub-btn active" data-subject="mat">MAT</button>
+        <button class="sub-btn" data-subject="fis">FÍS</button>
+        <button class="sub-btn" data-subject="his">HIS</button>
+        <button class="sub-btn" data-subject="bio">BIO</button>
+      </div>
+      <div class="lesson-status" id="lesson-topic-label">
+        Assunto: Equação do 2º Grau (Bhaskara)
+      </div>
+    </aside>
+
+    <!-- Barra de Ações e Câmera -->
+    <div class="chalk-toolbar">
+      <div class="toolbar-group">
+        <button class="chalk-btn" id="btn-rot-left" title="Girar câmera para esquerda">
+          ↺ Girar <kbd>Q</kbd>
+        </button>
+        <button class="chalk-btn" id="btn-rot-right" title="Girar câmera para direita">
+          ↻ Girar <kbd>E</kbd>
+        </button>
+      </div>
+      <div class="toolbar-group">
+        <button class="chalk-btn" id="btn-hand" title="Levantar a mão para perguntar">
+          ✋ Perguntar <kbd>ESPAÇO</kbd>
+        </button>
+        <button class="chalk-btn" id="btn-sit" title="Levantar ou sentar na carteira">
+          🪑 Levantar/Sentar <kbd>C</kbd>
+        </button>
+        <button class="chalk-btn" id="btn-light" title="Alternar luz do sol / noite">
+          ☀ Luz <kbd>L</kbd>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rodapé de Instruções -->
+    <div class="controls-bar">
+      <div class="control-item"><span>ESPAÇO</span> Levantar a Mão / Perguntar</div>
+      <div class="control-item"><span>C</span> Levantar ou Sentar</div>
+      <div class="control-item"><span>WASD / Setas / Clique</span> Andar pela Sala</div>
+      <div class="control-item"><span>Q / E</span> Girar Câmera Isométrica</div>
+    </div>
+  </div>
+
+  <script src="src/script.js" defer></script>
+</body>
+</html>
