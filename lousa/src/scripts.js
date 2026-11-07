@@ -1,8 +1,10 @@
- (() => {
+
+    (() => {
       const canvas = document.getElementById('iso-canvas');
       const ctx = canvas.getContext('2d');
+      const diagCanvas = document.getElementById('board-diagram-canvas');
+      const diagCtx = diagCanvas.getContext('2d');
 
-      // Dimensões da Sala Isométrica (12 x 10 ladrilhos)
       const GRID_W = 12;
       const GRID_H = 10;
       let TILE_W = 68;
@@ -18,133 +20,204 @@
 
       const ROT_LABELS = ['NORTE', 'LESTE', 'SUL', 'OESTE'];
 
-      // Conteúdo das Aulas que o Professor Explica Passo a Passo
+      // Catálogo Completo de Assuntos (Com Estatística em destaque!)
       const SUBJECTS = {
-        mat: {
-          title: "Assunto: Equação do 2º Grau (Bhaskara)",
+        est: {
+          name: "📊 Estatística & Probabilidade",
           steps: [
             {
-              chalkTop: "MATEMÁTICA — FUNÇÃO QUADRÁTICA",
-              chalkMain: "x² - 5x + 6 = 0    |    Δ = b² - 4ac",
-              speech: "Atenção, turma! Para achar as raízes de x² - 5x + 6 = 0, começamos calculando o discriminante Delta!",
+              shortName: "1. Média, Mediana e Moda",
+              chalkTop: "ESTATÍSTICA — TENDÊNCIA CENTRAL",
+              chalkMain: "x̄ = (Σxᵢ)/n  |  Amostra: {4, 6, 7, 7, 11} -> x̄=7, Md=7, Mo=7",
+              speech: "Turma, em Estatística começamos pelas medidas de tendência central: Média Aritmética (x̄), Mediana (centro do rol) e Moda (valor que mais se repete)!",
+              tip: "💡 Dica: Sempre ordene os dados em Rol crescente antes de calcular a Mediana!",
+              diagramType: "bars",
+              diagramCaption: "Histograma de Frequências da Amostra",
               boardX: 4.8
             },
             {
-              chalkTop: "PASSO 1: CALCULANDO O DELTA (Δ)",
-              chalkMain: "Δ = (-5)² - 4·(1)·(6)  =>  Δ = 25 - 24 = 1",
-              speech: "Como (-5) ao quadrado é 25, menos 24 temos Δ = 1! Como Delta é positivo, teremos duas raízes reais distintas.",
-              boardX: 6.2
+              shortName: "2. Variância e Desvio Padrão",
+              chalkTop: "ESTATÍSTICA — MEDIDAS DE DISPERSÃO",
+              chalkMain: "σ² = Σ(xᵢ - x̄)² / n     |     Desvio Padrão: σ = √σ²",
+              speech: "Duas turmas podem ter a mesma média 7, mas notas muito espalhadas! A Variância (σ²) e o Desvio Padrão (σ) medem exatamente essa regularidade!",
+              tip: "💡 Quanto menor o Desvio Padrão (σ), mais homogêneo e regular é o conjunto de dados.",
+              diagramType: "scatter",
+              diagramCaption: "Dispersão dos dados em torno da Média (x̄)",
+              boardX: 6.1
             },
             {
-              chalkTop: "PASSO 2: FÓRMULA DE BHASKARA",
-              chalkMain: "x = (5 ± √1) / 2   =>   x' = 2  e  x'' = 3",
-              speech: "Aplicando x = (-b ± √Δ) / 2a, chegamos em x' = 2 e x'' = 3! Anotem isso no caderno que cai na prova!",
-              boardX: 5.5
+              shortName: "3. Curva Normal (Gaussiana)",
+              chalkTop: "DISTRIBUIÇÃO NORMAL (GAUSS)",
+              chalkMain: "Simétrica: x̄ = Md = Mo   |   68% entre [x̄ - σ, x̄ + σ]",
+              speech: "Olhem o sino de Gauss no quadro! Numa distribuição normal, cerca de 68% dos dados ficam a 1 desvio padrão da média, e 95% ficam dentro de 2 desvios!",
+              tip: "💡 Regra Empírica (68-95-99,7%): fundamental para inferência estatística e intervalos de confiança.",
+              diagramType: "gauss",
+              diagramCaption: "Curva de Gauss: 68% em ±1σ | 95% em ±2σ",
+              boardX: 5.4
             },
             {
-              chalkTop: "INTERPRETAÇÃO GEOMÉTRICA (PARÁBOLA)",
-              chalkMain: "Vértice: Xv = -b/2a = 2,5   |   Yv = -Δ/4a = -0,25",
-              speech: "Reparem que a parábola corta o eixo X exatamente nos pontos 2 e 3, e tem concavidade voltada para cima!",
-              boardX: 3.8
-            }
-          ],
-          qa: [
-            { q: "Professor, e se o Delta der negativo?", a: "Ótima pergunta! Se Δ < 0, a equação não possui raízes no conjunto dos números reais!" },
-            { q: "Pode fazer por Soma e Produto?", a: "Claro! Dois números que somados dão 5 e multiplicados dão 6: só podem ser 2 e 3!" }
-          ]
-        },
-        fis: {
-          title: "Assunto: As Três Leis de Newton",
-          steps: [
-            {
-              chalkTop: "FÍSICA — DINÂMICA CLÁSSICA",
-              chalkMain: "1ª Lei (Inércia):  ΣF = 0  <=>  v = constante",
-              speech: "Na 1ª Lei de Newton, todo corpo continua em repouso ou em movimento retilíneo uniforme se nenhuma força resultante atuar sobre ele!",
-              boardX: 5.2
-            },
-            {
-              chalkTop: "2ª LEI DE NEWTON (PRINCÍPIO FUNDAMENTAL)",
-              chalkMain: "Fr = m · a     |     Unidade: 1 N = 1 kg·m/s²",
-              speech: "Olhem para o quadro: a Força Resultante é diretamente proporcional à aceleração! Mais massa exige mais força!",
-              boardX: 6.4
-            },
-            {
-              chalkTop: "3ª LEI DE NEWTON (AÇÃO E REAÇÃO)",
-              chalkMain: "F(A->B) = - F(B->A)   (Mesmo módulo, sentidos opostos)",
-              speech: "Ação e reação nunca se anulam porque atuam em corpos diferentes! Quando você empurra a carteira, ela empurra você!",
-              boardX: 4.3
-            }
-          ],
-          qa: [
-            { q: "Professor, peso e massa são a mesma coisa?", a: "Cuidado! Massa é medida em kg; Peso é uma força (P = m·g) medida em Newtons!" },
-            { q: "No vácuo a pena e o martelo caem juntos?", a: "Exatamente! Sem resistência do ar, todos os corpos caem com a mesma aceleração da gravidade!" }
-          ]
-        },
-        his: {
-          title: "Assunto: Revolução Industrial (Séc. XVIII)",
-          steps: [
-            {
-              chalkTop: "HISTÓRIA — REVOLUÇÃO INDUSTRIAL (1760)",
-              chalkMain: "Pioneirismo Inglês: Carvão Mineral + Ferro + Cercamentos",
-              speech: "No século XVIII, a Inglaterra reunia reservas de carvão, capital acumulado e mão de obra vinda do êxodo rural!",
-              boardX: 5.0
-            },
-            {
-              chalkTop: "DA MANUFATURA À MAQUINOFATURA",
-              chalkMain: "Máquina a Vapor (James Watt, 1769) -> Indústria Têxtil",
-              speech: "A máquina a vapor transformou energia térmica em trabalho mecânico, acelerando os teares e o transporte ferroviário!",
-              boardX: 6.3
-            },
-            {
-              chalkTop: "IMPACTOS SOCIAIS E URBANIZAÇÃO",
-              chalkMain: "Êxodo Rural  |  Jornadas de 14h  |  Surgimento dos Sindicatos",
-              speech: "O crescimento acelerado das cidades industriais mudou para sempre a noção de tempo, relógio e trabalho assalariado.",
+              shortName: "4. Probabilidade & Amostragem",
+              chalkTop: "PROBABILIDADE — ESPAÇO AMOSTRAL (Ω)",
+              chalkMain: "P(A) = n(A) / n(Ω)    |    0 ≤ P(A) ≤ 1  (ou 0% a 100%)",
+              speech: "Para fechar: a probabilidade de um evento A é a razão entre os casos favoráveis n(A) e o total de casos possíveis do espaço amostral Ω!",
+              tip: "💡 Eventos independentes: P(A ∩ B) = P(A) · P(B). Já a soma de todos os eventos elementares é sempre 100%.",
+              diagramType: "venn",
+              diagramCaption: "Espaço Amostral Ω e Diagrama de Eventos A ∪ B",
               boardX: 4.1
             }
           ],
           qa: [
-            { q: "O que foi o movimento Ludista, professor?", a: "Os ludistas eram trabalhadores que quebravam as máquinas em protesto contra o desemprego e os baixos salários!" }
+            { q: "Professor, quando é melhor usar a Mediana em vez da Média?", a: "Excelente pergunta! Quando há valores discrepantes (outliers), como salários muito altos que distorcem a média, a Mediana representa melhor o grupo!" },
+            { q: "Por que elevamos (xᵢ - x̄) ao quadrado na Variância?", a: "Porque se somarmos apenas os desvios (xᵢ - x̄), os positivos anulam os negativos e a soma dá sempre zero!" },
+            { q: "Uma distribuição pode ter mais de uma Moda?", a: "Pode sim! Se dois valores empatam na maior frequência, chamamos a série de Bimodal!" }
           ]
         },
-        bio: {
-          title: "Assunto: Biologia Celular & Mitocôndrias",
+        mat: {
+          name: "📐 Matemática (Função Quadrática)",
           steps: [
             {
-              chalkTop: "BIOLOGIA — CITOLOGIA E ORGANELAS",
-              chalkMain: "Célula Eucariótica: Membrana + Citoplasma + Núcleo",
-              speech: "Diferente das bactérias, nossas células são eucarióticas: possuem carioteca protegendo o DNA dentro do núcleo!",
-              boardX: 4.9
+              shortName: "1. Discriminante Delta",
+              chalkTop: "MATEMÁTICA — FUNÇÃO QUADRÁTICA",
+              chalkMain: "x² - 5x + 6 = 0    |    Δ = b² - 4ac = (-5)² - 24 = 1",
+              speech: "Atenção, turma! Para achar as raízes de x² - 5x + 6 = 0, começamos calculando o discriminante Delta!",
+              tip: "💡 Se Δ > 0 temos 2 raízes reais; se Δ = 0 temos 1 raiz dupla; se Δ < 0 não há raízes reais.",
+              diagramType: "parabola",
+              diagramCaption: "Parábola f(x) = x² - 5x + 6 cortando X em 2 e 3",
+              boardX: 4.8
             },
             {
-              chalkTop: "RESPIRAÇÃO CELULAR AERÓBICA",
-              chalkMain: "C₆H₁₂O₆ + 6 O₂  -->  6 CO₂ + 6 H₂O + Saldo de ATP",
-              speech: "As mitocôndrias são as usinas de energia da célula! Elas usam glicose e oxigênio para sintetizar moléculas de ATP.",
-              boardX: 6.2
+              shortName: "2. Fórmula de Bhaskara",
+              chalkTop: "PASSO 2: FÓRMULA DE BHASKARA",
+              chalkMain: "x = (-b ± √Δ) / 2a   =>   x' = 2  e  x'' = 3",
+              speech: "Aplicando x = (5 ± 1) / 2, chegamos em x' = 2 e x'' = 3! Anotem no caderno!",
+              tip: "💡 Soma das raízes: S = -b/a = 5. Produto das raízes: P = c/a = 6.",
+              diagramType: "parabola",
+              diagramCaption: "Raízes x' = 2 e x'' = 3 no eixo horizontal",
+              boardX: 6.1
             },
             {
-              chalkTop: "TEORIA DA ENDOSSIMBIOSE (LYNN MARGULIS)",
-              chalkMain: "Mitocôndrias e Cloroplastos possuem DNA próprio!",
-              speech: "Sabiam que a mitocôndria tem DNA circular próprio? Ela descende de antigas bactérias englobadas há bilhões de anos!",
-              boardX: 5.5
+              shortName: "3. Vértice da Parábola",
+              chalkTop: "PONTO DE MÍNIMO (VÉRTICE)",
+              chalkMain: "Xv = -b/2a = 2,5   |   Yv = -Δ/4a = -0,25",
+              speech: "O vértice fica exatamente no eixo de simetria entre as duas raízes: Xv = 2,5 e Yv = -0,25!",
+              tip: "💡 Como a > 0 (a = 1), a parábola tem concavidade voltada para cima e possui ponto de mínimo.",
+              diagramType: "parabola",
+              diagramCaption: "Vértice V(2.5, -0.25) como ponto mínimo",
+              boardX: 5.3
             }
           ],
           qa: [
-            { q: "Qual organela faz a síntese de proteínas?", a: "São os Ribossomos! Eles leem o RNA mensageiro e montam as proteínas aminoácido por aminoácido!" }
+            { q: "Professor, e se o Delta der negativo?", a: "Ótima pergunta! Se Δ < 0, a parábola não encosta no eixo X e não possui raízes reais!" },
+            { q: "Pode resolver por Soma e Produto?", a: "Claro! Dois números que somados dão 5 e multiplicados dão 6: só podem ser 2 e 3!" }
+          ]
+        },
+        fis: {
+          name: "🍎 Física (As Leis de Newton)",
+          steps: [
+            {
+              shortName: "1. Lei da Inércia",
+              chalkTop: "FÍSICA — 1ª LEI DE NEWTON",
+              chalkMain: "1ª Lei (Inércia):  ΣF = 0  <=>  Repouso ou MRU",
+              speech: "Na 1ª Lei de Newton, todo corpo tende a manter seu estado de repouso ou movimento retilíneo uniforme se a força resultante for nula!",
+              tip: "💡 A massa é a medida quantitativa da inércia de um corpo.",
+              diagramType: "vectors",
+              diagramCaption: "Equilíbrio de forças: Normal (N) e Peso (P)",
+              boardX: 5.0
+            },
+            {
+              shortName: "2. Princípio Fundamental",
+              chalkTop: "2ª LEI DE NEWTON (DINÂMICA)",
+              chalkMain: "Fr = m · a     |     Unidade SI: 1 N = 1 kg·m/s²",
+              speech: "A Força Resultante é igual ao produto da massa pela aceleração! Dobrando a força, dobramos a aceleração!",
+              tip: "💡 Força e aceleração são grandezas vetoriais que apontam sempre no mesmo sentido.",
+              diagramType: "vectors",
+              diagramCaption: "Bloco sob ação de Força Resultante Fr -> a",
+              boardX: 6.2
+            },
+            {
+              shortName: "3. Ação e Reação",
+              chalkTop: "3ª LEI DE NEWTON (AÇÃO E REAÇÃO)",
+              chalkMain: "F(A->B) = - F(B->A)   (Corpos distintos, sentidos opostos)",
+              speech: "Ação e reação nunca se equilibram porque estão aplicadas em corpos diferentes!",
+              tip: "💡 Exemplo: a Terra atrai a Lua e a Lua atrai a Terra com forças de mesma intensidade.",
+              diagramType: "vectors",
+              diagramCaption: "Par Ação-Reação em sentidos opostos",
+              boardX: 4.3
+            }
+          ],
+          qa: [
+            { q: "Professor, peso e massa são a mesma coisa?", a: "Cuidado! Massa é escalar em kg; Peso é força gravitacional (P = m·g) medida em Newtons!" }
+          ]
+        },
+        his: {
+          name: "🚂 História (Revolução Industrial)",
+          steps: [
+            {
+              shortName: "1. Pioneirismo Inglês",
+              chalkTop: "HISTÓRIA — REVOLUÇÃO INDUSTRIAL (1760)",
+              chalkMain: "Inglaterra: Carvão Mineral + Ferro + Lei dos Cercamentos",
+              speech: "No século XVIII, a Inglaterra reunia reservas de carvão, capital acumulado e mão de obra vinda do êxodo rural!",
+              tip: "💡 Os Cercamentos (Enclosure Acts) transformaram terras comunais em pastagens para ovelhas (lã).",
+              diagramType: "timeline",
+              diagramCaption: "Linha do Tempo das Revoluções Industriais",
+              boardX: 5.0
+            },
+            {
+              shortName: "2. Máquina a Vapor",
+              chalkTop: "DA MANUFATURA À MAQUINOFATURA",
+              chalkMain: "James Watt (1769): Máquina a Vapor -> Teares e Locomotivas",
+              speech: "A máquina a vapor substituiu a força humana e hidráulica, revolucionando a produção têxtil e o transporte!",
+              tip: "💡 A divisão técnica do trabalho aumentou drasticamente a produtividade das fábricas.",
+              diagramType: "timeline",
+              diagramCaption: "Evolução da Produção: Artesanato -> Maquinofatura",
+              boardX: 6.2
+            }
+          ],
+          qa: [
+            { q: "O que foi o movimento Ludista, professor?", a: "Os ludistas eram operários que quebravam máquinas em protesto contra o desemprego e as jornadas de 16 horas!" }
+          ]
+        },
+        bio: {
+          name: "🧬 Biologia (Citologia & Energia)",
+          steps: [
+            {
+              shortName: "1. Célula Eucariótica",
+              chalkTop: "BIOLOGIA — CITOLOGIA E ORGANELAS",
+              chalkMain: "Eucariontes: Membrana Plasmática + Citoplasma + Núcleo (DNA)",
+              speech: "Diferente das bactérias procariontes, nossas células possuem carioteca protegendo o material genético!",
+              tip: "💡 Ribossomos estão presentes tanto em células procariontes quanto eucarióticas.",
+              diagramType: "cell",
+              diagramCaption: "Esquema da Célula Eucariótica e Mitocôndria",
+              boardX: 4.9
+            },
+            {
+              shortName: "2. Respiração Celular",
+              chalkTop: "MITOCÔNDRIAS & SÍNTESE DE ATP",
+              chalkMain: "C₆H₁₂O₆ + 6 O₂  -->  6 CO₂ + 6 H₂O + Energia (ATP)",
+              speech: "As mitocôndrias realizam a respiração celular aeróbica: quebram a glicose na presença de oxigênio para gerar ATP!",
+              tip: "💡 Etapas: Glicólise (citosol), Ciclo de Krebs (matriz) e Cadeia Respiratória (cristas).",
+              diagramType: "cell",
+              diagramCaption: "Mitocôndria: Cristas e Matriz Mitocondrial",
+              boardX: 6.1
+            }
+          ],
+          qa: [
+            { q: "Por que a mitocôndria tem DNA próprio?", a: "Pela Teoria da Endossimbiose! Ela descende de antigas bactérias aeróbicas englobadas há bilhões de anos!" }
           ]
         }
       };
 
       const lectureState = {
-        subjectKey: 'mat',
+        subjectKey: 'est', // Começa em Estatística!
         stepIndex: 0,
         stepTimer: 0,
-        stepDuration: 8.5,
-        chalkTop: SUBJECTS.mat.steps[0].chalkTop,
-        chalkMain: SUBJECTS.mat.steps[0].chalkMain,
+        stepDuration: 9.0,
+        chalkTop: SUBJECTS.est.steps[0].chalkTop,
+        chalkMain: SUBJECTS.est.steps[0].chalkMain,
         qaIndex: 0
       };
 
-      // Professor Motta (NPC ativo no estrado da frente)
+      // Professor Motta
       const teacher = {
         x: 4.8,
         y: 0.95,
@@ -155,12 +228,11 @@
         walkCycle: 0,
         isMoving: false,
         writingAtBoard: false,
-        pointerAngle: 0,
-        speech: SUBJECTS.mat.steps[0].speech,
-        speechTimer: 8.0
+        speech: SUBJECTS.est.steps[0].speech,
+        speechTimer: 8.5
       };
 
-      // Jogador (Você é o estudante da Carteira Central #5 — começa sentado assistindo à aula!)
+      // Jogador (Começa sentado na Carteira #5 no centro da sala)
       const player = {
         x: 5.52,
         y: 5.9,
@@ -177,7 +249,6 @@
         speechTimer: 0
       };
 
-      // Colegas de Turma Sentados nas Outras 8 Carteiras
       const classmates = [];
       const props = [];
       const dustParticles = [];
@@ -196,22 +267,21 @@
       }
 
       const STUDENT_PROFILES = [
-        { name: "Lucas", hair: "#2B1E16", skin: "#F2C19E", bag: "#C84B31", comment: "Anotando tudo com caneta azul..." },
-        { name: "Marina", hair: "#6E2C1E", skin: "#F7D3BA", bag: "#2B72B8", comment: "Marina está resolvendo o exercício antes do professor." },
-        { name: "Pedro", hair: "#1A1A1A", skin: "#C68B59", bag: "#3E7A56", comment: "Pedro sublinhou a fórmula com marca-texto amarelo." },
-        { name: "Bia", hair: "#D99B26", skin: "#F7D3BA", bag: "#8C4A7E", comment: "Bia está super concentrada na explicação da lousa." },
-        null, // Carteira #5 (Centro da sala) pertence ao jogador!
-        { name: "Rafael", hair: "#3B271A", skin: "#E0AC82", bag: "#D47A27", comment: "Rafael está quase cochilando depois do almoço..." },
-        { name: "Giulia", hair: "#1F1B24", skin: "#F2C19E", bag: "#C84B31", comment: "Giulia está desenhando caricaturas na borda do caderno." },
-        { name: "Tiago", hair: "#8C4A27", skin: "#F7D3BA", bag: "#284B63", comment: "Tiago está contando os minutos no relógio da parede." },
-        { name: "Sofia", hair: "#181412", skin: "#B5784A", bag: "#3E7A56", comment: "Sofia está com a mão no queixo prestando atenção." }
+        { name: "Lucas", hair: "#2B1E16", skin: "#F2C19E", bag: "#C84B31", comment: "Calculando o desvio padrão na ponta do lápis..." },
+        { name: "Marina", hair: "#6E2C1E", skin: "#F7D3BA", bag: "#2B72B8", comment: "Marina já montou o rol e achou a mediana!" },
+        { name: "Pedro", hair: "#1A1A1A", skin: "#C68B59", bag: "#3E7A56", comment: "Pedro desenhou a curva de Gauss no caderno." },
+        { name: "Bia", hair: "#D99B26", skin: "#F7D3BA", bag: "#8C4A7E", comment: "Bia está conferindo a tabela de frequências." },
+        null, // Carteira #5: Jogador
+        { name: "Rafael", hair: "#3B271A", skin: "#E0AC82", bag: "#D47A27", comment: "Rafael está tentando lembrar a diferença entre variância e desvio padrão..." },
+        { name: "Giulia", hair: "#1F1B24", skin: "#F2C19E", bag: "#C84B31", comment: "Giulia coloriu as barras do histograma com marca-texto." },
+        { name: "Tiago", hair: "#8C4A27", skin: "#F7D3BA", bag: "#284B63", comment: "Tiago está anotando as fórmulas do quadro-negro." },
+        { name: "Sofia", hair: "#181412", skin: "#B5784A", bag: "#3E7A56", comment: "Sofia está super atenta à explicação do Prof. Motta." }
       ];
 
       function buildClassroom() {
         props.length = 0;
         classmates.length = 0;
 
-        // 1. Estrado de madeira do professor
         props.push({
           id: 'platform',
           type: 'platform',
@@ -219,7 +289,6 @@
           solid: false
         });
 
-        // 2. Mesa do Professor (canto esquerdo do estrado para deixar espaço livre em frente ao quadro-negro)
         props.push({
           id: 'teacher_desk',
           type: 'teacher_desk',
@@ -236,7 +305,6 @@
           seatDir: { x: 0, y: 1 }
         });
 
-        // 3. Armários Escolares de Aço (Parede Norte/Nordeste, voltados para o Sul +Y)
         props.push({
           id: 'lockers',
           type: 'lockers',
@@ -244,7 +312,6 @@
           solid: true
         });
 
-        // 4. Lixeira Escolar
         props.push({
           id: 'trash_bin',
           type: 'trash_bin',
@@ -252,7 +319,6 @@
           solid: true
         });
 
-        // 5. Estante de Livros (Encostada na parede Oeste, voltada para Leste +X)
         props.push({
           id: 'bookshelf',
           type: 'bookshelf',
@@ -260,7 +326,6 @@
           solid: true
         });
 
-        // 6. Grade de 9 Carteiras e Cadeiras (3 fileiras x 3 colunas) + 8 Colegas Sentados + Sua Carteira (#5)
         const cols = [2.4, 5.2, 8.0];
         const rows = [3.1, 5.1, 7.1];
 
@@ -272,17 +337,15 @@
             const profile = STUDENT_PROFILES[idx];
             const deskNum = idx + 1;
 
-            const deskObj = {
+            props.push({
               id: `desk_${deskNum}`,
               type: 'student_desk',
               deskNumber: deskNum,
               x: dx, y: dy, w: 1.18, d: 0.72, h: 0.72,
               solid: true,
               hasOpenBook: true,
-              hasPencilCase: (deskNum % 2 === 0),
-              bagColor: profile ? profile.bag : '#D64045'
-            };
-            props.push(deskObj);
+              hasPencilCase: (deskNum % 2 === 0)
+            });
 
             const chairObj = {
               id: `chair_${deskNum}`,
@@ -309,7 +372,6 @@
                 speechTimer: 0
               });
             } else {
-              // Carteira central (#5): o jogador começa sentado aqui!
               player.myChair = chairObj;
               player.sittingOn = chairObj;
               player.x = chairObj.x + chairObj.w / 2;
@@ -325,17 +387,29 @@
 
       buildClassroom();
 
-      // Controle de Mudança de Matéria e Passos da Explicação
-      function setSubject(subKey) {
+      // Controle de Seleção de Assunto e Tópicos
+      function setSubject(subKey, stepIdx = 0) {
         lectureState.subjectKey = subKey;
-        lectureState.stepIndex = 0;
+        lectureState.stepIndex = stepIdx;
         lectureState.stepTimer = 0;
         applyLectureStep();
+
+        document.getElementById('subject-select').value = subKey;
+        document.getElementById('modal-subject-select').value = subKey;
 
         document.querySelectorAll('.sub-btn').forEach(btn => {
           btn.classList.toggle('active', btn.getAttribute('data-subject') === subKey);
         });
-        document.getElementById('lesson-topic-label').textContent = SUBJECTS[subKey].title;
+
+        syncBoardModalUI();
+      }
+
+      function changeStep(delta) {
+        const sub = SUBJECTS[lectureState.subjectKey];
+        lectureState.stepIndex = (lectureState.stepIndex + delta + sub.steps.length) % sub.steps.length;
+        lectureState.stepTimer = 0;
+        applyLectureStep();
+        syncBoardModalUI();
       }
 
       function applyLectureStep() {
@@ -344,24 +418,296 @@
         lectureState.chalkTop = step.chalkTop;
         lectureState.chalkMain = step.chalkMain;
 
+        document.getElementById('lesson-topic-label').textContent =
+          `Tópico ${lectureState.stepIndex + 1}/${sub.steps.length}: ${step.shortName.replace(/^\d+\.\s*/, '')}`;
+
         teacher.targetX = step.boardX;
         teacher.targetY = 0.85;
         teacher.speech = step.speech;
-        teacher.speechTimer = lectureState.stepDuration - 0.6;
+        teacher.speechTimer = lectureState.stepDuration - 0.5;
         teacher.writingAtBoard = true;
 
         setTimeout(() => {
           teacher.writingAtBoard = false;
-        }, 2200);
+        }, 2000);
       }
+
+      // Modal do Quadro-Negro Ampliado + Gráfico Desenhado a Giz
+      function openBoardModal() {
+        syncBoardModalUI();
+        document.getElementById('board-modal').classList.add('open');
+      }
+
+      function closeBoardModal() {
+        document.getElementById('board-modal').classList.remove('open');
+      }
+
+      function syncBoardModalUI() {
+        const sub = SUBJECTS[lectureState.subjectKey];
+        const step = sub.steps[lectureState.stepIndex];
+
+        document.getElementById('modal-subject-title').textContent = sub.name;
+        document.getElementById('modal-step-tag').textContent =
+          `TÓPICO ${lectureState.stepIndex + 1} DE ${sub.steps.length} • ${step.chalkTop}`;
+        document.getElementById('modal-formula').textContent = step.chalkMain;
+        document.getElementById('modal-explanation').textContent = step.speech;
+        document.getElementById('modal-extra-note').textContent = step.tip;
+        document.getElementById('modal-diagram-caption').textContent = step.diagramCaption;
+
+        const pillsContainer = document.getElementById('modal-step-pills');
+        pillsContainer.innerHTML = '';
+        sub.steps.forEach((st, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'step-pill' + (idx === lectureState.stepIndex ? ' active' : '');
+          btn.textContent = st.shortName;
+          btn.onclick = () => {
+            lectureState.stepIndex = idx;
+            lectureState.stepTimer = 0;
+            applyLectureStep();
+            syncBoardModalUI();
+          };
+          pillsContainer.appendChild(btn);
+        });
+
+        drawChalkDiagram(step.diagramType);
+      }
+
+      // Desenha os gráficos a giz dentro da Modal do Quadro-Negro (Histograma, Curva de Gauss, Dispersão, Parábola, etc.)
+      function drawChalkDiagram(type) {
+        const w = diagCanvas.width;
+        const h = diagCanvas.height;
+        diagCtx.clearRect(0, 0, w, h);
+
+        diagCtx.strokeStyle = 'rgba(244, 241, 234, 0.85)';
+        diagCtx.fillStyle = 'rgba(244, 241, 234, 0.85)';
+        diagCtx.lineWidth = 2;
+        diagCtx.font = '12px "Architects Daughter", cursive';
+
+        if (type === 'bars') {
+          // Histograma de Estatística: {4, 6, 7, 7, 11}
+          diagCtx.beginPath();
+          diagCtx.moveTo(32, 18);
+          diagCtx.lineTo(32, h - 26);
+          diagCtx.lineTo(w - 20, h - 26);
+          diagCtx.stroke();
+
+          const data = [
+            { label: 'x=4', val: 1, col: '#7CC6FE' },
+            { label: 'x=6', val: 1, col: '#7CC6FE' },
+            { label: 'x=7 (Mo/Md)', val: 2, col: '#F3C65F' },
+            { label: 'x=11', val: 1, col: '#7CC6FE' }
+          ];
+          data.forEach((d, i) => {
+            const bx = 52 + i * 52;
+            const bh = d.val * 52;
+            const by = (h - 26) - bh;
+            diagCtx.fillStyle = d.col;
+            diagCtx.globalAlpha = 0.35;
+            diagCtx.fillRect(bx, by, 34, bh);
+            diagCtx.globalAlpha = 1;
+            diagCtx.strokeStyle = d.col;
+            diagCtx.strokeRect(bx, by, 34, bh);
+
+            diagCtx.fillStyle = '#F4F1EA';
+            diagCtx.textAlign = 'center';
+            diagCtx.fillText(d.label, bx + 17, h - 10);
+            diagCtx.fillText(`f=${d.val}`, bx + 17, by - 6);
+          });
+          return;
+        }
+
+        if (type === 'gauss') {
+          // Curva Normal (Sino de Gauss)
+          const baseY = h - 28;
+          const midX = w / 2;
+          diagCtx.beginPath();
+          diagCtx.moveTo(20, baseY);
+          diagCtx.lineTo(w - 20, baseY);
+          diagCtx.stroke();
+
+          // Área preenchida ±1σ
+          diagCtx.fillStyle = 'rgba(243, 198, 95, 0.22)';
+          diagCtx.beginPath();
+          diagCtx.moveTo(midX - 42, baseY);
+          for (let x = midX - 42; x <= midX + 42; x += 2) {
+            const z = (x - midX) / 42;
+            const y = baseY - Math.exp(-0.5 * z * z) * 105;
+            diagCtx.lineTo(x, y);
+          }
+          diagCtx.lineTo(midX + 42, baseY);
+          diagCtx.closePath();
+          diagCtx.fill();
+
+          // Traçado do sino
+          diagCtx.strokeStyle = '#F3C65F';
+          diagCtx.lineWidth = 2.5;
+          diagCtx.beginPath();
+          for (let x = 24; x <= w - 24; x += 2) {
+            const z = (x - midX) / 42;
+            const y = baseY - Math.exp(-0.5 * z * z) * 105;
+            if (x === 24) diagCtx.moveTo(x, y);
+            else diagCtx.lineTo(x, y);
+          }
+          diagCtx.stroke();
+
+          // Linhas tracejadas da Média e ±1σ
+          diagCtx.setLineDash([4, 4]);
+          diagCtx.strokeStyle = '#7CC6FE';
+          [midX - 42, midX, midX + 42].forEach(lx => {
+            diagCtx.beginPath();
+            diagCtx.moveTo(lx, baseY);
+            diagCtx.lineTo(lx, baseY - 105);
+            diagCtx.stroke();
+          });
+          diagCtx.setLineDash([]);
+
+          diagCtx.fillStyle = '#F4F1EA';
+          diagCtx.textAlign = 'center';
+          diagCtx.fillText('-1σ', midX - 42, baseY + 15);
+          diagCtx.fillText('x̄ (Média)', midX, baseY + 15);
+          diagCtx.fillText('+1σ', midX + 42, baseY + 15);
+          diagCtx.fillStyle = '#F3C65F';
+          diagCtx.fillText('68,2%', midX, baseY - 45);
+          return;
+        }
+
+        if (type === 'scatter') {
+          // Gráfico de desvios em relação à linha da média x̄
+          const midY = h / 2;
+          diagCtx.strokeStyle = '#F3C65F';
+          diagCtx.setLineDash([5, 4]);
+          diagCtx.beginPath();
+          diagCtx.moveTo(25, midY);
+          diagCtx.lineTo(w - 25, midY);
+          diagCtx.stroke();
+          diagCtx.setLineDash([]);
+
+          diagCtx.fillStyle = '#F3C65F';
+          diagCtx.fillText('Média x̄ = 7', w - 55, midY - 8);
+
+          const pts = [
+            { x: 50, y: midY + 36, label: '4' },
+            { x: 95, y: midY + 14, label: '6' },
+            { x: 140, y: midY, label: '7' },
+            { x: 185, y: midY, label: '7' },
+            { x: 230, y: midY - 44, label: '11' }
+          ];
+          pts.forEach(p => {
+            diagCtx.strokeStyle = '#F29CA3';
+            diagCtx.beginPath();
+            diagCtx.moveTo(p.x, midY);
+            diagCtx.lineTo(p.x, p.y);
+            diagCtx.stroke();
+
+            diagCtx.fillStyle = '#7CC6FE';
+            diagCtx.beginPath();
+            diagCtx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+            diagCtx.fill();
+
+            diagCtx.fillStyle = '#F4F1EA';
+            diagCtx.textAlign = 'center';
+            diagCtx.fillText(p.label, p.x, p.y - 8);
+          });
+          return;
+        }
+
+        if (type === 'venn') {
+          // Diagrama de Venn (Probabilidade)
+          diagCtx.strokeRect(24, 16, w - 48, h - 32);
+          diagCtx.fillText('Ω', 36, 32);
+
+          diagCtx.strokeStyle = '#7CC6FE';
+          diagCtx.beginPath();
+          diagCtx.arc(w / 2 - 26, h / 2 + 4, 42, 0, Math.PI * 2);
+          diagCtx.stroke();
+
+          diagCtx.strokeStyle = '#F3C65F';
+          diagCtx.beginPath();
+          diagCtx.arc(w / 2 + 26, h / 2 + 4, 42, 0, Math.PI * 2);
+          diagCtx.stroke();
+
+          diagCtx.textAlign = 'center';
+          diagCtx.fillStyle = '#7CC6FE';
+          diagCtx.fillText('A', w / 2 - 42, h / 2 + 8);
+          diagCtx.fillStyle = '#F3C65F';
+          diagCtx.fillText('B', w / 2 + 42, h / 2 + 8);
+          diagCtx.fillStyle = '#F4F1EA';
+          diagCtx.fillText('A∩B', w / 2, h / 2 + 8);
+          return;
+        }
+
+        if (type === 'parabola') {
+          const ox = 60, oy = h - 42;
+          diagCtx.beginPath();
+          diagCtx.moveTo(20, oy); diagCtx.lineTo(w - 20, oy);
+          diagCtx.moveTo(ox, 16); diagCtx.lineTo(ox, h - 14);
+          diagCtx.stroke();
+
+          diagCtx.strokeStyle = '#F3C65F';
+          diagCtx.lineWidth = 2.5;
+          diagCtx.beginPath();
+          for (let px = -15; px <= 165; px += 3) {
+            const xVal = px / 35 + 0.5;
+            const yVal = (xVal - 2) * (xVal - 3);
+            const sx = ox + xVal * 42;
+            const sy = oy - yVal * 38;
+            if (px === -15) diagCtx.moveTo(sx, sy);
+            else diagCtx.lineTo(sx, sy);
+          }
+          diagCtx.stroke();
+
+          diagCtx.fillStyle = '#7CC6FE';
+          diagCtx.beginPath();
+          diagCtx.arc(ox + 2 * 42, oy, 4, 0, Math.PI * 2);
+          diagCtx.arc(ox + 3 * 42, oy, 4, 0, Math.PI * 2);
+          diagCtx.fill();
+          diagCtx.fillText("x'=2", ox + 2 * 42 - 10, oy + 16);
+          diagCtx.fillText("x''=3", ox + 3 * 42 + 6, oy + 16);
+          return;
+        }
+
+        // Diagrama genérico para Física/História/Biologia
+        diagCtx.strokeStyle = '#F3C65F';
+        diagCtx.strokeRect(45, 40, w - 90, h - 80);
+        diagCtx.textAlign = 'center';
+        diagCtx.fillStyle = '#F4F1EA';
+        diagCtx.fillText(lectureState.chalkTop, w / 2, h / 2 - 6);
+        diagCtx.fillStyle = '#7CC6FE';
+        diagCtx.fillText("Esquema Resumo no Quadro", w / 2, h / 2 + 16);
+      }
+
+      // Eventos dos Seletores e Botões da Interface
+      document.getElementById('subject-select').addEventListener('change', (e) => {
+        setSubject(e.target.value, 0);
+      });
+
+      document.getElementById('modal-subject-select').addEventListener('change', (e) => {
+        setSubject(e.target.value, 0);
+      });
 
       document.querySelectorAll('.sub-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          setSubject(btn.getAttribute('data-subject'));
+          setSubject(btn.getAttribute('data-subject'), 0);
         });
       });
 
-      // Jogador levanta a mão para fazer uma pergunta ao Professor Motta
+      document.getElementById('btn-prev-step').onclick = () => changeStep(-1);
+      document.getElementById('btn-next-step').onclick = () => changeStep(1);
+      document.getElementById('modal-next-btn').onclick = () => changeStep(1);
+
+      document.getElementById('btn-open-board').onclick = () => openBoardModal();
+      document.getElementById('btn-board-toolbar').onclick = () => openBoardModal();
+      document.getElementById('btn-close-modal').onclick = () => closeBoardModal();
+
+      document.getElementById('board-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'board-modal') closeBoardModal();
+      });
+
+      document.getElementById('modal-ask-btn').onclick = () => {
+        closeBoardModal();
+        askQuestion();
+      };
+
       function askQuestion() {
         const sub = SUBJECTS[lectureState.subjectKey];
         const qa = sub.qa[lectureState.qaIndex % sub.qa.length];
@@ -371,17 +717,15 @@
         player.speech = qa.q;
         player.speechTimer = 3.5;
 
-        // Professor vira para a turma e responde logo em seguida
         setTimeout(() => {
           teacher.writingAtBoard = false;
           teacher.facing = { x: 0, y: 1 };
           teacher.speech = qa.a;
-          teacher.speechTimer = 5.5;
-          lectureState.stepTimer = 2.0; // Dá tempo de ler a resposta
-        }, 1600);
+          teacher.speechTimer = 5.8;
+          lectureState.stepTimer = 1.5;
+        }, 1500);
       }
 
-      // Levantar ou Sentar na sua Carteira
       function togglePlayerSit(chairObj = player.myChair) {
         if (player.sittingOn) {
           const ch = player.sittingOn;
@@ -389,7 +733,7 @@
           player.x = ch.x - 0.52;
           player.y = ch.y + ch.d / 2;
           player.z = 0;
-          player.speech = "Levantei para esticar as pernas.";
+          player.speech = "Levantei para ver o quadro de perto.";
           player.speechTimer = 2.2;
         } else if (chairObj) {
           player.sittingOn = chairObj;
@@ -399,12 +743,12 @@
           player.y = chairObj.y + chairObj.d / 2;
           player.z = 0.25;
           player.facing = { ...chairObj.seatDir };
-          player.speech = "Sentado assistindo à explicação do Prof. Motta.";
-          player.speechTimer = 2.5;
+          player.speech = "Sentado assistindo à explicação.";
+          player.speechTimer = 2.2;
         }
       }
 
-      // Projeção Isométrica com 4 Rotações de Câmera
+      // Projeção Isométrica com 4 Rotações
       function rotateGridCoords(gx, gy) {
         switch (camera.rotation) {
           case 0: return { rx: gx, ry: gy };
@@ -485,12 +829,46 @@
       window.addEventListener('resize', resizeCanvas);
       resizeCanvas();
 
-      // Controles de Teclado e Clique
+      // Verifica se um clique de tela atingiu o Quadro-Negro na Parede Norte
+      function isPointInPolygon(px, py, pts) {
+        let inside = false;
+        for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+          const xi = pts[i].x, yi = pts[i].y;
+          const xj = pts[j].x, yj = pts[j].y;
+          const intersect = ((yi > py) !== (yj > py)) &&
+            (px < (xj - xi) * (py - yi) / ((yj - yi) || 1e-6) + xi);
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
+      function getChalkboardScreenPolygon() {
+        return [
+          isoToScreen(2.2, 0.02, 0.92),
+          isoToScreen(8.5, 0.02, 0.92),
+          isoToScreen(8.5, 0.02, 2.55),
+          isoToScreen(2.2, 0.02, 2.55)
+        ];
+      }
+
       const keys = {};
       window.addEventListener('keydown', (e) => {
+        const modalOpen = document.getElementById('board-modal').classList.contains('open');
+        if (modalOpen) {
+          if (e.key === 'Escape' || e.key.toLowerCase() === 'b') {
+            closeBoardModal();
+          } else if (e.key === 'ArrowRight') {
+            changeStep(1);
+          } else if (e.key === 'ArrowLeft') {
+            changeStep(-1);
+          }
+          return;
+        }
+
         const k = e.key.toLowerCase();
         keys[k] = true;
 
+        if (k === 'b') openBoardModal();
         if (k === 'q') rotateCamera(-1);
         if (k === 'e') rotateCamera(1);
         if (k === 'l') camera.nightMode = !camera.nightMode;
@@ -506,9 +884,18 @@
       });
 
       canvas.addEventListener('pointerdown', (e) => {
+        if (document.getElementById('board-modal').classList.contains('open')) return;
+
+        // 1. Se clicou diretamente no Quadro-Negro na parede norte, abre a modal do quadro!
+        if ((camera.rotation === 0 || camera.rotation === 3) &&
+            isPointInPolygon(e.clientX, e.clientY, getChalkboardScreenPolygon())) {
+          openBoardModal();
+          return;
+        }
+
         const { gx, gy } = screenToIso(e.clientX, e.clientY);
 
-        // Verificar se clicou em algum colega sentado para ver o que ele está fazendo
+        // 2. Se clicou em algum colega sentado
         for (const st of classmates) {
           if (Math.hypot(gx - st.x, gy - st.y) < 0.55) {
             st.speech = st.comment;
@@ -517,7 +904,7 @@
           }
         }
 
-        // Se clicou na sua própria cadeira (#5), senta nela
+        // 3. Se clicou na sua própria cadeira (#5), senta nela
         if (player.myChair) {
           const cx = player.myChair.x + player.myChair.w / 2;
           const cy = player.myChair.y + player.myChair.d / 2;
@@ -527,7 +914,7 @@
           }
         }
 
-        // Caminhar até o ladrilho clicado
+        // 4. Caminhar até o ladrilho clicado
         if (gx >= 0.45 && gx <= GRID_W - 0.45 && gy >= 0.45 && gy <= GRID_H - 0.45) {
           if (player.sittingOn) togglePlayerSit();
           player.targetPos = { x: gx, y: gy };
@@ -563,7 +950,6 @@
         return false;
       }
 
-      // Renderizador de Prismas 3D Isométricos
       function drawIsoPrism(x, y, z, w, d, h, topColor, leftColor, rightColor, strokeColor = 'rgba(20,15,10,0.28)') {
         const corners = [
           { gx: x,     gy: y },
@@ -627,7 +1013,6 @@
         }
       }
 
-      // Desenho do Piso de Taco e Paredes da Sala
       function drawFloorAndWalls() {
         const f0 = isoToScreen(0, 0, -0.18);
         const f1 = isoToScreen(GRID_W, 0, -0.18);
@@ -673,7 +1058,6 @@
           }
         }
 
-        // Feixes de Luz Solar no Chão vindos das janelas
         if (!camera.nightMode) {
           const windowsY = [2.6, 5.1];
           for (const wy of windowsY) {
@@ -782,21 +1166,24 @@
         ctx.fill();
         ctx.stroke();
 
-        // Texto dinâmico da matéria escrita na lousa pelo professor
-        const centerChalk = isoToScreen(5.35, 0.04, 1.76);
+        const centerChalk = isoToScreen(5.35, 0.04, 1.78);
         ctx.save();
         ctx.translate(centerChalk.x, centerChalk.y);
         const angle = Math.atan2(b1.y - b0.y, b1.x - b0.x);
         ctx.rotate(angle);
 
-        ctx.fillStyle = 'rgba(243, 198, 95, 0.92)';
-        ctx.font = `700 ${Math.round(TILE_W * 0.145)}px "Architects Daughter", cursive`;
+        ctx.fillStyle = 'rgba(243, 198, 95, 0.95)';
+        ctx.font = `700 ${Math.round(TILE_W * 0.14)}px "Architects Daughter", cursive`;
         ctx.textAlign = 'center';
-        ctx.fillText(lectureState.chalkTop, 0, -TILE_W * 0.25);
+        ctx.fillText(lectureState.chalkTop, 0, -TILE_W * 0.28);
 
-        ctx.fillStyle = 'rgba(244, 241, 234, 0.95)';
-        ctx.font = `${Math.round(TILE_W * 0.185)}px "Architects Daughter", cursive`;
-        ctx.fillText(lectureState.chalkMain, 0, TILE_W * 0.04);
+        ctx.fillStyle = 'rgba(244, 241, 234, 0.96)';
+        ctx.font = `${Math.round(TILE_W * 0.165)}px "Architects Daughter", cursive`;
+        ctx.fillText(lectureState.chalkMain, 0, -TILE_W * 0.02);
+
+        ctx.fillStyle = 'rgba(124, 198, 254, 0.85)';
+        ctx.font = `${Math.round(TILE_W * 0.125)}px "IBM Plex Mono", monospace`;
+        ctx.fillText("🔍 Clique no quadro ou aperte [B] para ampliar", 0, TILE_W * 0.24);
         ctx.restore();
 
         // Relógio de Parede
@@ -864,7 +1251,6 @@
         ctx.fill();
       }
 
-      // Renderização dos Móveis (Carteiras, Cadeiras de 4 pernas, Estante, Armários)
       function drawProp(p) {
         if (p.type === 'platform') {
           drawIsoPrism(p.x, p.y, 0, p.w, p.d, p.h, '#9E6B3B', '#754D28', '#5E3D1E');
@@ -895,7 +1281,6 @@
 
           drawSortedParts(deskParts);
 
-          // Caderno aberto em cima de todas as carteiras
           if (p.hasOpenBook) {
             drawIsoPrism(p.x + 0.24, p.y + 0.18, p.h, 0.44, 0.32, 0.035, '#FBF8F1', '#D8D2C5', '#C2BCAE');
           }
@@ -950,7 +1335,6 @@
           ];
           drawSortedParts(tParts);
 
-          // Diário de classe + Globo Terrestre
           drawIsoPrism(p.x + 0.25, p.y + 0.22, baseZ + p.h, 0.44, 0.34, 0.07, '#284B63', '#1D3647', '#152836');
 
           const globePos = isoToScreen(p.x + 1.48, p.y + 0.42, baseZ + p.h + 0.24);
@@ -1046,7 +1430,6 @@
         }
       }
 
-      // Desenha um Aluno Sentado (ou em pé)
       function drawStudentCharacter({ x, y, z, skin, hair, bagColor, isSitting, isMoving, walkCycle, facing, handRaised, isPlayer, phase = 0 }) {
         const shadowPos = isoToScreen(x, y, 0.02);
         if (!isSitting) {
@@ -1059,13 +1442,11 @@
         const bob = isMoving ? Math.abs(Math.sin(walkCycle * 10)) * 0.08 : 0;
         const pos = isoToScreen(x, y, z + bob);
 
-        // Pernas
         ctx.lineWidth = Math.max(4, TILE_W * 0.075);
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#1E3557';
 
         if (isSitting) {
-          // Pernas dobradas para frente no assento
           ctx.beginPath();
           ctx.moveTo(pos.x - 5, pos.y - 8);
           ctx.lineTo(pos.x - 7, pos.y + 4);
@@ -1082,7 +1463,6 @@
           ctx.stroke();
         }
 
-        // Mochila pendurada atrás
         const dirScreenX = (facing.x - facing.y);
         const backpackOffsetX = dirScreenX >= 0 ? -7 : 7;
         ctx.fillStyle = bagColor || '#D64045';
@@ -1093,7 +1473,6 @@
         ctx.fill();
         ctx.stroke();
 
-        // Tronco (Uniforme escolar branco/creme com detalhe verde-lousa)
         ctx.fillStyle = '#F4F1EA';
         ctx.beginPath();
         ctx.roundRect(pos.x - 8.5, pos.y - 32, 17, 20, 5);
@@ -1103,7 +1482,6 @@
         ctx.fillStyle = isPlayer ? '#F3C65F' : '#183026';
         ctx.fillRect(pos.x - 8.5, pos.y - 32, 17, 5);
 
-        // Braço levantado se estiver fazendo pergunta!
         if (handRaised > 0) {
           ctx.strokeStyle = skin;
           ctx.lineWidth = 4.5;
@@ -1112,7 +1490,6 @@
           ctx.lineTo(pos.x + 11, pos.y - 52);
           ctx.stroke();
         } else if (isSitting) {
-          // Braço anotando no caderno sobre a carteira
           const writeMove = Math.sin(performance.now() * 0.008 + phase) * 2.2;
           ctx.strokeStyle = skin;
           ctx.lineWidth = 4;
@@ -1122,7 +1499,6 @@
           ctx.stroke();
         }
 
-        // Cabeça com leve movimento natural de olhar para o quadro/caderno
         const headBob = isSitting ? Math.sin(performance.now() * 0.003 + phase) * 1.2 : 0;
         ctx.fillStyle = skin;
         ctx.lineWidth = 1.6;
@@ -1132,13 +1508,11 @@
         ctx.fill();
         ctx.stroke();
 
-        // Cabelo
         ctx.fillStyle = hair;
         ctx.beginPath();
         ctx.arc(pos.x, pos.y - 44.5 + headBob, 10.3, Math.PI * 0.95, Math.PI * 2.05);
         ctx.fill();
 
-        // Indicador sutil "VOCÊ" acima da sua carteira
         if (isPlayer) {
           ctx.fillStyle = '#F3C65F';
           ctx.beginPath();
@@ -1150,7 +1524,6 @@
         }
       }
 
-      // Desenha o Professor Motta Explicando a Matéria na Frente da Sala
       function drawTeacher() {
         const shadowPos = isoToScreen(teacher.x, teacher.y, teacher.z + 0.01);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
@@ -1161,7 +1534,6 @@
         const bob = teacher.isMoving ? Math.abs(Math.sin(teacher.walkCycle * 8)) * 0.07 : 0;
         const pos = isoToScreen(teacher.x, teacher.y, teacher.z + bob);
 
-        // Calça social marrom-escura
         const legSwing = teacher.isMoving ? Math.sin(teacher.walkCycle * 8) * 4.5 : 0;
         ctx.lineWidth = Math.max(4.5, TILE_W * 0.08);
         ctx.lineCap = 'round';
@@ -1173,7 +1545,6 @@
         ctx.lineTo(pos.x + 5 + legSwing, pos.y);
         ctx.stroke();
 
-        // Jaleco / Paletó de Professor (Bege/Tweed com gravata bordô)
         ctx.fillStyle = '#D8CFC2';
         ctx.strokeStyle = '#221814';
         ctx.lineWidth = 1.8;
@@ -1182,11 +1553,9 @@
         ctx.fill();
         ctx.stroke();
 
-        // Gravata
         ctx.fillStyle = '#8C2D27';
         ctx.fillRect(pos.x - 2, pos.y - 34, 4, 13);
 
-        // Braço segurando giz ou ponteiro de madeira apontando para o quadro-negro
         const gesture = Math.sin(performance.now() * 0.007) * 5;
         ctx.strokeStyle = '#D8CFC2';
         ctx.lineWidth = 4.5;
@@ -1195,7 +1564,6 @@
         ctx.lineTo(pos.x + 16, pos.y - 36 + gesture);
         ctx.stroke();
 
-        // Ponteiro de madeira / Giz na mão do professor
         ctx.strokeStyle = '#F3C65F';
         ctx.lineWidth = 2.2;
         ctx.beginPath();
@@ -1203,7 +1571,6 @@
         ctx.lineTo(pos.x + 25, pos.y - 48 + gesture);
         ctx.stroke();
 
-        // Cabeça do Professor Motta
         ctx.fillStyle = '#E8B896';
         ctx.strokeStyle = '#221814';
         ctx.lineWidth = 1.8;
@@ -1212,7 +1579,6 @@
         ctx.fill();
         ctx.stroke();
 
-        // Cabelo grisalho + Óculos
         ctx.fillStyle = '#5C6468';
         ctx.beginPath();
         ctx.arc(pos.x, pos.y - 50, 11.2, Math.PI, Math.PI * 2);
@@ -1224,7 +1590,6 @@
         ctx.strokeRect(pos.x + 1, pos.y - 48, 5, 3.5);
       }
 
-      // Balão de Fala Dinâmico (Professor, Jogador e Colegas)
       function drawBubbleAt(gx, gy, gz, text, isTeacherBubble = false) {
         if (!text) return;
         const headPos = isoToScreen(gx, gy, gz);
@@ -1234,7 +1599,7 @@
           ? '600 13.5px "Space Grotesk", sans-serif'
           : '600 12.5px "Space Grotesk", sans-serif';
 
-        const maxWidth = isTeacherBubble ? 290 : 220;
+        const maxWidth = isTeacherBubble ? 305 : 220;
         const words = text.split(' ');
         const lines = [];
         let currentLine = words[0];
@@ -1282,20 +1647,20 @@
         ctx.restore();
       }
 
-      // Loop de Atualização em Tempo Real
       let lastTime = performance.now();
 
       function update(dt) {
-        // Avanço automático da explicação do Professor Motta
         lectureState.stepTimer += dt;
         if (lectureState.stepTimer >= lectureState.stepDuration) {
           lectureState.stepTimer = 0;
           const sub = SUBJECTS[lectureState.subjectKey];
           lectureState.stepIndex = (lectureState.stepIndex + 1) % sub.steps.length;
           applyLectureStep();
+          if (document.getElementById('board-modal').classList.contains('open')) {
+            syncBoardModalUI();
+          }
         }
 
-        // Movimentação do Professor no Estrado
         const tdx = teacher.targetX - teacher.x;
         const tdy = teacher.targetY - teacher.y;
         const tDist = Math.hypot(tdx, tdy);
@@ -1314,7 +1679,6 @@
         if (player.speechTimer > 0) player.speechTimer -= dt;
         if (player.handRaised > 0) player.handRaised -= dt;
 
-        // Eventuais dúvidas ou comentários espontâneos de colegas sentados
         for (const st of classmates) {
           if (st.speechTimer > 0) st.speechTimer -= dt;
           if (st.handRaisedTimer > 0) st.handRaisedTimer -= dt;
@@ -1326,7 +1690,6 @@
           if (floorRipples[i].alpha <= 0) floorRipples.splice(i, 1);
         }
 
-        // Movimentação opcional do jogador se quiser levantar da carteira
         let inputScreenX = 0;
         let inputScreenY = 0;
         if (keys['w'] || keys['arrowup']) inputScreenY -= 1;
@@ -1389,7 +1752,6 @@
         }
       }
 
-      // Renderização Principal com Z-Sorting (Painter's Algorithm)
       function render() {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -1411,7 +1773,6 @@
 
         const renderList = [];
 
-        // 1. Móveis da sala
         for (const p of props) {
           if (p.type === 'platform') {
             drawProp(p);
@@ -1424,7 +1785,6 @@
           });
         }
 
-        // 2. Colegas de turma sentados nas carteiras
         for (const st of classmates) {
           const stRot = rotateGridCoords(st.x, st.y);
           renderList.push({
@@ -1447,14 +1807,12 @@
           });
         }
 
-        // 3. Professor Motta lá na frente
         const tRot = rotateGridCoords(teacher.x, teacher.y);
         renderList.push({
           depth: tRot.rx + tRot.ry + 0.05,
           draw: () => drawTeacher()
         });
 
-        // 4. Seu Personagem (Sentado na carteira central ou andando pela sala)
         const pRot = rotateGridCoords(player.x, player.y);
         renderList.push({
           depth: pRot.rx + pRot.ry + (player.sittingOn ? 0.08 : 0),
@@ -1480,7 +1838,6 @@
           item.draw();
         }
 
-        // Partículas de pó de giz
         for (const pt of dustParticles) {
           const sc = isoToScreen(pt.x, pt.y, pt.z);
           const alpha = 0.25 + 0.25 * Math.sin(pt.phase);
@@ -1492,7 +1849,6 @@
           ctx.fill();
         }
 
-        // Balões de explicação do professor e perguntas dos alunos
         if (teacher.speechTimer > 0) {
           drawBubbleAt(teacher.x, teacher.y, teacher.z + 1.52, teacher.speech, true);
         }
@@ -1516,3 +1872,4 @@
 
       requestAnimationFrame(loop);
     })();
+  

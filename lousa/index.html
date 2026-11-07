@@ -10,23 +10,48 @@
   <link rel="stylesheet" href="src/style.css" />
 </head>
 <body>
-  <div id="game-container">
+
+    <div id="game-container">
     <canvas id="iso-canvas"></canvas>
 
-    <!-- Painel de Matéria em Andamento -->
+    <!-- Painel de Seleção de Assunto e Quadro-Negro -->
     <aside class="lesson-panel" aria-label="Controle da Aula">
       <div class="lesson-header">
         <span class="lesson-title">Prof. Motta • Sala 204</span>
         <span class="lesson-badge" id="cam-dir-label">NORTE</span>
       </div>
+
+      <!-- Dropdown Seletor de Assunto + Botão de Abrir o Quadro -->
+      <div class="selector-row">
+        <select id="subject-select" class="subject-select" aria-label="Selecionar Assunto da Aula">
+          <option value="est">📊 Estatística & Probabilidade</option>
+          <option value="mat">📐 Matemática (Bhaskara)</option>
+          <option value="fis">🍎 Física (Leis de Newton)</option>
+          <option value="his">🚂 História (Rev. Industrial)</option>
+          <option value="bio">🧬 Biologia (Citologia)</option>
+        </select>
+        <button class="open-board-btn" id="btn-open-board" title="Ver o Quadro-Negro de perto (Tecla B)">
+          🔍 Quadro
+        </button>
+      </div>
+
+      <!-- Abas Rápidas -->
       <div class="subject-tabs">
-        <button class="sub-btn active" data-subject="mat">MAT</button>
+        <button class="sub-btn active" data-subject="est">EST</button>
+        <button class="sub-btn" data-subject="mat">MAT</button>
         <button class="sub-btn" data-subject="fis">FÍS</button>
         <button class="sub-btn" data-subject="his">HIS</button>
         <button class="sub-btn" data-subject="bio">BIO</button>
       </div>
-      <div class="lesson-status" id="lesson-topic-label">
-        Assunto: Equação do 2º Grau (Bhaskara)
+
+      <div class="lesson-status-row">
+        <div class="lesson-status" id="lesson-topic-label">
+          Tópico 1/4: Média, Mediana e Moda
+        </div>
+        <div class="step-nav-mini">
+          <button class="mini-btn" id="btn-prev-step" title="Tópico anterior">◀</button>
+          <button class="mini-btn" id="btn-next-step" title="Próximo tópico">▶</button>
+        </div>
       </div>
     </aside>
 
@@ -41,9 +66,14 @@
         </button>
       </div>
       <div class="toolbar-group">
+        <button class="chalk-btn" id="btn-board-toolbar" title="Abrir Quadro-Negro em Modal">
+          📋 Ver Lousa <kbd>B</kbd>
+        </button>
         <button class="chalk-btn" id="btn-hand" title="Levantar a mão para perguntar">
           ✋ Perguntar <kbd>ESPAÇO</kbd>
         </button>
+      </div>
+      <div class="toolbar-group">
         <button class="chalk-btn" id="btn-sit" title="Levantar ou sentar na carteira">
           🪑 Levantar/Sentar <kbd>C</kbd>
         </button>
@@ -55,13 +85,63 @@
 
     <!-- Rodapé de Instruções -->
     <div class="controls-bar">
-      <div class="control-item"><span>ESPAÇO</span> Levantar a Mão / Perguntar</div>
-      <div class="control-item"><span>C</span> Levantar ou Sentar</div>
-      <div class="control-item"><span>WASD / Setas / Clique</span> Andar pela Sala</div>
-      <div class="control-item"><span>Q / E</span> Girar Câmera Isométrica</div>
+      <div class="control-item"><span>B / Clique na Lousa</span> Abrir Quadro</div>
+      <div class="control-item"><span>ESPAÇO</span> Fazer Pergunta</div>
+      <div class="control-item"><span>C</span> Levantar/Sentar</div>
+      <div class="control-item"><span>WASD / Clique</span> Andar</div>
+      <div class="control-item"><span>Q / E</span> Girar Câmera</div>
+    </div>
+
+    <!-- Modal do Quadro-Negro Ampliado -->
+    <div class="modal-overlay" id="board-modal" role="dialog" aria-modal="true">
+      <div class="chalkboard-modal">
+        <div class="modal-top-bar">
+          <h2 id="modal-subject-title">📊 Estatística & Probabilidade</h2>
+          <div class="modal-controls-right">
+            <select id="modal-subject-select" class="subject-select" aria-label="Trocar assunto no quadro">
+              <option value="est">📊 Estatística & Probabilidade</option>
+              <option value="mat">📐 Matemática (Bhaskara)</option>
+              <option value="fis">🍎 Física (Leis de Newton)</option>
+              <option value="his">🚂 História (Rev. Industrial)</option>
+              <option value="bio">🧬 Biologia (Citologia)</option>
+            </select>
+            <button class="modal-close-btn" id="btn-close-modal">✕ Fechar [ESC]</button>
+          </div>
+        </div>
+
+        <div class="board-grid">
+          <div class="board-main-notes">
+            <div>
+              <div class="board-step-tag" id="modal-step-tag">TÓPICO 1 DE 4</div>
+              <div class="board-formula-highlight" id="modal-formula">
+                x̄ = (Σ xᵢ) / n   |   Rol: {4, 6, 7, 7, 11} => x̄ = 7
+              </div>
+              <div class="board-explanation-text" id="modal-explanation">
+                Na Estatística Descritiva, a Média (x̄) soma todos os valores e divide por n. A Mediana é o termo central do rol ordenado (7), e a Moda é o valor mais frequente (7)!
+              </div>
+            </div>
+            <div style="font-size: 13px; color: var(--chalk-yellow); border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 8px;" id="modal-extra-note">
+              💡 Dica de Prova: A mediana não é afetada por valores extremos (outliers), enquanto a média aritmética é!
+            </div>
+          </div>
+
+          <div class="board-Diagram-box">
+            <canvas id="board-diagram-canvas" width="280" height="170"></canvas>
+            <div class="diagram-caption" id="modal-diagram-caption">
+              Gráfico a giz na lousa
+            </div>
+          </div>
+        </div>
+
+        <div class="board-steps-bar">
+          <div class="step-pills" id="modal-step-pills"></div>
+          <div class="board-action-btns">
+            <button class="chalk-btn" id="modal-ask-btn">✋ Perguntar ao Professor</button>
+            <button class="chalk-btn" id="modal-next-btn">Próximo Tópico ▶</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <script src="src/script.js" defer></script>
 </body>
 </html>
